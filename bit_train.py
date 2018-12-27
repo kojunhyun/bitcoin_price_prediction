@@ -221,7 +221,7 @@ def main():
             saver = tf.train.Saver()
             sess.run(tf.global_variables_initializer())
 
-            sum_diff = 0.0
+            sum_diff = 100.0
 
             for epoch in range(model_config.epoch_num):
                 output_config = OutputConfig()
@@ -235,12 +235,9 @@ def main():
 
 
                 if sum_diff > ((tr_diff + va_diff)/2):
+
                     sum_diff = ((tr_diff + va_diff)/2)
-                    saver.save(sess, f_path + '/model.ckpt', global_step=epoch+1)
-        
-
-    
-
+                    saver.save(sess, os.path.join(f_path ,'model.ckpt'), global_step=epoch+1)
 
 
 if __name__ == "__main__":
