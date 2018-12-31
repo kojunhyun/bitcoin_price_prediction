@@ -17,3 +17,5 @@ bit_train.py 는 데이터를 학습시키는 용도이며, bit_test.py는 학�
 python bit_lstm_train.py --save_path 저장위치
 - testing :
 python bit_lstm_test.py --save_path 저장위치
+
+- bit_lstm_test.py 는 upbit api에서 호출하여 실시간으로 처리 
