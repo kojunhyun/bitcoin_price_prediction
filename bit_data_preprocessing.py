@@ -148,10 +148,11 @@ def data_reg(data):
 
     return data_x, data_y, price_reg_min, price_reg_max
 
-def data_split(seq_length, raw2p_data, save_path):
+def data_split(data_x, data_y):
     
-    del raw2p_data['opening_date(kor)'] # 데이터프레임 삭제
-    del raw2p_data['closing_date(kor)'] # 위 줄과 같은 효과
+    """
+    #del raw2p_data['opening_date(kor)'] # 데이터프레임 삭제
+    #del raw2p_data['closing_date(kor)'] # 위 줄과 같은 효과
 
 
     data_x, data_y, reg_min, reg_max = data_reg(raw2p_data)
@@ -168,27 +169,27 @@ def data_split(seq_length, raw2p_data, save_path):
         #     print(_y)
         dataX.append(_x) # dataX 리스트에 추가
         dataY.append(_y) # dataY 리스트에 추가
-    
+    """
 
     train_size = int(len(data_y) * 0.9)
     print('tr size : ', train_size)
 
 
-    trX = np.array(dataX[:train_size])
-    trY = np.array(dataY[:train_size])
+    trX = np.array(data_x[:train_size])
+    trY = np.array(data_y[:train_size])
 
-    vaX = np.array(dataX[train_size:])
-    vaY = np.array(dataY[train_size:])
+    vaX = np.array(data_x[train_size:])
+    vaY = np.array(data_y[train_size:])
 
 
 
     print('trX shape : ', trX.shape)
     print('trY shape : ', trY.shape)
 
-    return trX, trY, vaX, vaY, reg_min, reg_max
+    return trX, trY, vaX, vaY
 
 
-def data_preprocessing(raw_dataframe):
+def data_preprocessing(raw_dataframe, seq_length):
     
 
     # 이동평균선 
@@ -212,21 +213,43 @@ def data_preprocessing(raw_dataframe):
     r2p = r2p.dropna(axis=0)
     r2p.to_csv('preprocessing_data.csv',index=False) #판다스이용 csv파일로 저장
 
-    
+    del r2p['opening_date(kor)'] # 데이터프레임 삭제
+    del r2p['closing_date(kor)'] # 위 줄과 같은 효과
+
+    data_x, data_y, reg_min, reg_max = data_reg(r2p)
+
+    dataX = [] # 입력으로 사용될 Sequence Data
+    dataY = [] # 출력(타켓)으로 사용
+    for i in range(0, len(data_y) - seq_length):
+        _x = data_x[i : i+seq_length]
+        _y = data_y[i+1 : i+seq_length+1] # 다음 나타날 주가(정답)
+        # 첫번째 행만 출력해 봄
+        # if i is 0:
+        #     print(_x, "->")
+        #     print(_y)
+        dataX.append(_x) # dataX 리스트에 추가
+        dataY.append(_y) # dataY 리스트에 추가
+
+    dataX = np.array(dataX)
+    dataY = np.array(dataY)
+    reg_min = reg_min[seq_length:]
+    reg_max = reg_max[seq_length:]
     #trX, trY, vaX, vaY = data_split(seq_time_step, r2p, save_path) 
 
-    return r2p
+    #return r2p
+    return dataX, dataY, reg_min, reg_max
 
 
 def batch_iterator(dataX, dataY, batch_size, num_steps):
 
     data_len = len(dataY)
-    batch_len = data_len / batch_size
+    #batch_len = data_len / batch_size
 
     #print(data_len)
     #print(batch_len)
 
-    epoch_size = int((batch_len) / num_steps)
+    #epoch_size = int((batch_len) / num_steps)
+    epoch_size = int((data_len) / batch_size)
     if epoch_size == 0:
         raise ValueError("epoch_size == 0, decrease batch_size or num_steps")
 
@@ -244,10 +267,12 @@ def main():
     save_path = 'model\\'
     #tr_te_mode = True
     #tr_te_mode = False
-    r2p_data = data_preprocessing(raw_data)
+    dataX, dataY, reg_min, reg_max = data_preprocessing(raw_data, seq_time_step)
+    #print(dataX.shape)
+    #print(reg_min.shape)
     #trX, trY, vaX, vaY = data_preprocessing(raw_data, seq_time_step, save_path)
     #trX, trY, vaX, vaY = data_split(seq_time_step, r2p_data, save_path) 
-    data_split(seq_time_step, r2p_data, save_path) 
+    #data_split(seq_time_step, r2p_data, save_path) 
 
     #print(trX[0])
 
