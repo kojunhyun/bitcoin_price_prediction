@@ -18,4 +18,4 @@ python bit_lstm_train.py --save_path 저장위치
 - testing :
 python bit_lstm_test.py --save_path 저장위치
 
-- bit_lstm_test.py 는 upbit api에서 호출하여 실시간으로 처리 
+- bit_lstm_test.py 는 upbit api에서 호출하여 실시간으로 처리 예정(현재는 데이터 불러와서 test)
