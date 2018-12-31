@@ -14,6 +14,6 @@ bit_train.py 는 데이터를 학습시키는 용도이며, bit_test.py는 학�
 
 ### 사용법
 - training : 
-python bit_train.py --save_path 저장위치 --train True
+python bit_lstm_train.py --save_path 저장위치
 - testing :
-python bit_test.py --save_path 저장위치 --train False
+python bit_lstm_test.py --save_path 저장위치
